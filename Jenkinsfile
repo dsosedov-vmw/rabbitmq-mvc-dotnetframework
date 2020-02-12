@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bar 'msbuild src'
+                bat 'msbuild src'
             }
         }
         stage('Test') {
