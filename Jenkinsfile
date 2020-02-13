@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                bat 'nuget restore src'
                 bat 'msbuild src'
             }
         }
