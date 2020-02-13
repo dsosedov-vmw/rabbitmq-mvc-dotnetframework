@@ -8,7 +8,6 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bat '$env:RestoreUseSkipNonexistentTargets=\'false\''
                 bat 'nuget restore src'
                 bat 'msbuild src'
             }
