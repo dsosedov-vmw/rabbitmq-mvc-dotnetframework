@@ -8,9 +8,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                set +e
-                bat 'nuget restore src'
-                set -es
+                catchError {
+                    bat 'nuget restore src'
+                }
                 bat 'msbuild src'
             }
         }
