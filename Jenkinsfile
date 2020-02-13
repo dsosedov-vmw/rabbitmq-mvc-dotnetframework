@@ -19,14 +19,14 @@ pipeline {
         }
         stage('Publish') {
             steps {
-                bat 'msbuild src /p:PublishProfile=FolderProfile /p:DeployOnBuild=true'
+                bat 'msbuild src /p:Configuration=Release /p:PublishProfile=FolderProfile /p:DeployOnBuild=true'
             }
         }
         stage('Deploy') {
             steps {
                 pushToCloudFoundry(
                   target: 'api.run.pcfone.io',
-                  organization: 'dsosedov-pivot',
+                  organization: 'pivot-dsosedov',
                   cloudSpace: 'production',
                   credentialsId: 'cf_creds'
                  )
