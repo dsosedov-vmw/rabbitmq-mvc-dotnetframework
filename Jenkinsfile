@@ -1,13 +1,14 @@
 pipeline {
     agent {
         docker {
-            image 'mcr.microsoft.com/dotnet/framework/sdk'
+            image 'mcr.microsoft.com/dotnet/framework/sdk:4.8'
             label 'windows'
         }
     }
     stages {
         stage('Build') {
             steps {
+                bat '$env:RestoreUseSkipNonexistentTargets=\'false\''
                 bat 'nuget restore src'
                 bat 'msbuild src'
             }
