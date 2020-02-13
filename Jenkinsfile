@@ -8,7 +8,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                set +e
                 bat 'nuget restore src'
+                set -es
                 bat 'msbuild src'
             }
         }
@@ -31,6 +33,11 @@ pipeline {
                   credentialsId: 'cf_creds'
                  )
             }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'manifest.yml', fingerprint: true
         }
     }
 }
