@@ -8,8 +8,9 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                echo 'Building...'
                 //bat 'nuget restore src'
-                bat 'msbuild src'
+                //bat 'msbuild src'
             }
         }
         stage('Test') {
