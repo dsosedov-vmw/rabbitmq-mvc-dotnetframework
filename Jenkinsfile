@@ -14,12 +14,12 @@ pipeline {
         }
         stage('Test') {
             steps {
-                bat 'Testing...'
+                echo 'Testing...'
             }
         }
         stage('Publish') {
             steps {
-                bat 'Publishing...'
+                bat 'msbuild src /p:PublishProfile=FolderProfile /p:DeployOnBuild=true'
             }
         }
         stage('Deploy') {
