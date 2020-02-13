@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text;
 using System.Web.Mvc;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace Web.Controllers
 {
@@ -27,6 +29,7 @@ namespace Web.Controllers
                         }
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -47,6 +50,29 @@ namespace Web.Controllers
         {
             try
             {
+                var body = Encoding.UTF8.GetBytes(message.Text);
+
+                var ampqUri = Environment.GetEnvironmentVariable("rabbitmq:client:uri");
+
+                var connectionFactory = new ConnectionFactory { Uri = new Uri(ampqUri) };
+
+                using (var connection = connectionFactory.CreateConnection())
+                {
+                    using (var channel = connection.CreateModel())
+                    {
+                        channel.QueueDeclare(queue: QueueName,
+                                     durable: false,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+
+                        channel.BasicPublish(exchange: "",
+                                     routingKey: QueueName,
+                                     basicProperties: null,
+                                     body: body);
+                    }
+                }
+
                 ViewData["Status"] = "Message sent successfully.";
             }
             catch (Exception ex)
@@ -64,15 +90,46 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Receive(Models.Message message)
+        public ActionResult Receive(Models.Message msg)
         {
             try
             {
-                string msgBody;
+                var ampqUri = Environment.GetEnvironmentVariable("rabbitmq:client:uri");
 
-                msgBody = "foo";
+                var connectionFactory = new ConnectionFactory { Uri = new Uri(ampqUri) };
 
-                ViewData["Status"] = msgBody;
+                using (var connection = connectionFactory.CreateConnection())
+                {
+                    using (var channel = connection.CreateModel())
+                    {
+                        channel.QueueDeclare(queue: QueueName,
+                                     durable: false,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+
+                        // TODO: rewrite this
+                        var consumer = new QueueingBasicConsumer(channel);
+
+                        channel.BasicConsume(queue: QueueName,
+                                             autoAck: true,
+                                             consumer: consumer);
+
+                        ViewData["Status"] = "No messages found.";
+
+                        var message = string.Empty;
+
+                        while (consumer.Queue.Dequeue(1000, out BasicDeliverEventArgs ea))
+                        {
+                            message += $"{Encoding.UTF8.GetString(ea.Body)}; ";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(message))
+                        {
+                            ViewData["Status"] = message;
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
