@@ -3,7 +3,9 @@ applications:
 - name: rabbitmq-mvc-dotnetframework
   memory: 512M
   instances: 1
-  path: C:/Publish/rabbitmq-mvc-dotnetframework
+  path: src/Web/bin/Release/publish
   stack: windows
   buildpacks:
   - hwc_buildpack
+  services:
+  - rabbitmq-service
