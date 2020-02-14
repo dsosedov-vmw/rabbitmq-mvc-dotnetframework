@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'mcr.microsoft.com/dotnet/framework/sdk:mcr.microsoft.com/dotnet/framework/sdk:4.8-20191210-windowsservercore-ltsc2019'
+            image 'mcr.microsoft.com/dotnet/framework/sdk:4.8-20191210-windowsservercore-ltsc2019'
             label 'windows'
         }
     }
